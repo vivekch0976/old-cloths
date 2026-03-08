@@ -1,0 +1,9 @@
+# Copy to db.conf and update values for your environment.
+# This file is sourced by run_sql.sh.
+
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_NAME=vintagedb
+DB_USER=vintage
+DB_PASSWORD=3LLyour0LdCloth35
+
