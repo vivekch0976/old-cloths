@@ -43,33 +43,6 @@ function toCurrencyValue(value) {
   return value;
 }
 
-const COUNTRY_OPTIONS = (() => {
-  const fallback = ['United States', 'United Kingdom', 'India', 'Canada', 'Australia'];
-  if (typeof Intl === 'undefined' || typeof Intl.DisplayNames === 'undefined') {
-    return fallback;
-  }
-  let regionCodes = [];
-  if (typeof Intl.supportedValuesOf === 'function') {
-    try {
-      // Some runtimes do not support "region" and throw RangeError.
-      regionCodes = Intl.supportedValuesOf('region');
-    } catch {
-      regionCodes = [];
-    }
-  }
-  if (!regionCodes.length) {
-    return fallback;
-  }
-  const display = new Intl.DisplayNames(['en'], { type: 'region' });
-  return regionCodes
-    .map((code) => display.of(code))
-    .filter(Boolean)
-    .filter((name, index, all) => all.indexOf(name) === index)
-    .sort((a, b) => a.localeCompare(b));
-})();
-
-const PHONE_CODE_OPTIONS = Array.from({ length: 999 }, (_, index) => `+${index + 1}`);
-
 const SiteNav = {
   props: {
     actionLabel: {
@@ -166,8 +139,10 @@ const AuthModal = {
       isSubmitting: false,
       message: '',
       error: '',
-      countryOptions: COUNTRY_OPTIONS,
-      phoneCodeOptions: PHONE_CODE_OPTIONS,
+      countryOptions: [],
+      phoneCodeOptions: [],
+      registerCountry: '',
+      registerPhoneCode: '',
     };
   },
   created() {
@@ -186,6 +161,9 @@ const AuthModal = {
       this.message = '';
       this.error = '';
       document.body.style.overflow = 'hidden';
+      if (this.mode === 'register') {
+        this.loadRegisterMeta();
+      }
     },
     close() {
       this.isOpen = false;
@@ -197,6 +175,29 @@ const AuthModal = {
       this.mode = mode;
       this.message = '';
       this.error = '';
+      if (this.mode === 'register') {
+        this.loadRegisterMeta();
+      }
+    },
+    async loadRegisterMeta() {
+      if (this.countryOptions.length && this.phoneCodeOptions.length) {
+        return;
+      }
+      try {
+        const payload = await requestJson('/public/register-meta');
+        this.countryOptions = Array.isArray(payload.countries) ? payload.countries : [];
+        this.phoneCodeOptions = Array.isArray(payload.phone_codes) ? payload.phone_codes : [];
+      } catch (error) {
+        this.error = error.message;
+      }
+    },
+    handleCountryChange() {
+      const selected = this.countryOptions.find(
+        (entry) => entry.name === this.registerCountry,
+      );
+      if (selected?.dial_code) {
+        this.registerPhoneCode = selected.dial_code;
+      }
     },
     async submitLogin() {
       this.isSubmitting = true;
@@ -235,8 +236,8 @@ const AuthModal = {
           full_name: (formData.get('register-name') || '').toString().trim(),
           email: (formData.get('register-email') || '').toString().trim(),
           password,
-          country: (formData.get('register-country') || '').toString().trim(),
-          phone_code: (formData.get('register-phone-code') || '').toString().trim(),
+          country: this.registerCountry.trim(),
+          phone_code: this.registerPhoneCode.trim(),
           phone_number: (formData.get('register-phone-number') || '').toString().trim(),
         };
         const result = await requestJson('/auth/register', {
@@ -245,6 +246,8 @@ const AuthModal = {
         });
         this.message = `Account created for ${result.full_name}. You can log in now.`;
         this.$refs.registerForm.reset();
+        this.registerCountry = '';
+        this.registerPhoneCode = '';
       } catch (error) {
         this.error = error.message;
       } finally {
@@ -291,14 +294,33 @@ const AuthModal = {
             <input name="register-password-confirm" type="password" minlength="8" required />
           </label>
           <label>Country
-            <input name="register-country" type="text" list="country-list" required />
+            <input
+              name="register-country"
+              type="text"
+              list="country-list"
+              v-model="registerCountry"
+              @change="handleCountryChange"
+              @input="handleCountryChange"
+              required
+            />
           </label>
           <datalist id="country-list">
-            <option v-for="country in countryOptions" :key="country" :value="country"></option>
+            <option
+              v-for="country in countryOptions"
+              :key="country.name"
+              :value="country.name"
+            ></option>
           </datalist>
           <div class="auth-phone-row">
             <label>Phone code
-              <input name="register-phone-code" type="text" list="phone-code-list" placeholder="+1" required />
+              <input
+                name="register-phone-code"
+                type="text"
+                list="phone-code-list"
+                placeholder="+1"
+                v-model="registerPhoneCode"
+                required
+              />
             </label>
             <label>Phone number
               <input name="register-phone-number" type="tel" required />

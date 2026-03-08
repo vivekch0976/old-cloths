@@ -3,7 +3,9 @@
 
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_NAME=vintagedb
-DB_USER=vintage
-DB_PASSWORD=3LLyour0LdCloth35
-
+DB_NAME=
+DB_SCHEMA=app
+DB_APP_USER=postgres
+# Used only if SQL_PROMPT_PASSWORD=config.
+DB_PASSWORD=
+DB_BOOTSTRAP_NAME=postgres

@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from backend.app.public_reference import COUNTRY_TO_DIAL_CODE, REGISTRATION_COUNTRIES
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 STORE_PATH = BASE_DIR / "backend" / "data" / "store.json"
@@ -79,6 +80,10 @@ def save_store(store: dict[str, Any]) -> None:
 
 def normalize_email(value: str) -> str:
     return value.strip().lower()
+
+
+def normalize_country(value: str) -> str:
+    return " ".join(value.split()).strip()
 
 
 def hash_password(password: str, salt_hex: str | None = None) -> str:
@@ -369,6 +374,12 @@ def get_closet() -> dict[str, Any]:
     return build_closet_payload(store)
 
 
+@app.get("/api/public/register-meta")
+def get_register_meta() -> dict[str, Any]:
+    phone_codes = sorted({entry["dial_code"] for entry in REGISTRATION_COUNTRIES}, key=lambda code: int(code[1:]))
+    return {"countries": REGISTRATION_COUNTRIES, "phone_codes": phone_codes}
+
+
 @app.post("/api/items", status_code=201)
 def create_item(listing: ListingCreate) -> dict[str, Any]:
     store = load_store()
@@ -426,12 +437,22 @@ def register_user(payload: RegisterCreate) -> dict[str, Any]:
     if any(normalize_email(user.get("email", "")) == email for user in users):
         raise HTTPException(status_code=409, detail="Email is already registered")
 
+    country = normalize_country(payload.country)
+    expected_code = COUNTRY_TO_DIAL_CODE.get(country.lower())
+    if not expected_code:
+        raise HTTPException(status_code=422, detail="Unsupported country")
+    if payload.phone_code != expected_code:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Phone code must match selected country ({expected_code})",
+        )
+
     user = {
         "id": len(users) + 1,
         "full_name": payload.full_name.strip(),
         "email": email,
         "password_hash": hash_password(payload.password),
-        "country": payload.country.strip(),
+        "country": country,
         "phone_code": payload.phone_code,
         "phone_number": payload.phone_number.strip(),
     }
