@@ -1,0 +1,68 @@
+from __future__ import annotations
+
+from typing import Final
+
+REGISTRATION_COUNTRIES: Final[list[dict[str, str]]] = [
+    {"name": "Afghanistan", "dial_code": "+93"},
+    {"name": "Argentina", "dial_code": "+54"},
+    {"name": "Australia", "dial_code": "+61"},
+    {"name": "Austria", "dial_code": "+43"},
+    {"name": "Bangladesh", "dial_code": "+880"},
+    {"name": "Belgium", "dial_code": "+32"},
+    {"name": "Brazil", "dial_code": "+55"},
+    {"name": "Canada", "dial_code": "+1"},
+    {"name": "Chile", "dial_code": "+56"},
+    {"name": "China", "dial_code": "+86"},
+    {"name": "Colombia", "dial_code": "+57"},
+    {"name": "Czechia", "dial_code": "+420"},
+    {"name": "Denmark", "dial_code": "+45"},
+    {"name": "Egypt", "dial_code": "+20"},
+    {"name": "Finland", "dial_code": "+358"},
+    {"name": "France", "dial_code": "+33"},
+    {"name": "Germany", "dial_code": "+49"},
+    {"name": "Greece", "dial_code": "+30"},
+    {"name": "Hong Kong", "dial_code": "+852"},
+    {"name": "Hungary", "dial_code": "+36"},
+    {"name": "Iceland", "dial_code": "+354"},
+    {"name": "India", "dial_code": "+91"},
+    {"name": "Indonesia", "dial_code": "+62"},
+    {"name": "Ireland", "dial_code": "+353"},
+    {"name": "Israel", "dial_code": "+972"},
+    {"name": "Italy", "dial_code": "+39"},
+    {"name": "Japan", "dial_code": "+81"},
+    {"name": "Kenya", "dial_code": "+254"},
+    {"name": "Malaysia", "dial_code": "+60"},
+    {"name": "Mexico", "dial_code": "+52"},
+    {"name": "Nepal", "dial_code": "+977"},
+    {"name": "Netherlands", "dial_code": "+31"},
+    {"name": "New Zealand", "dial_code": "+64"},
+    {"name": "Nigeria", "dial_code": "+234"},
+    {"name": "Norway", "dial_code": "+47"},
+    {"name": "Pakistan", "dial_code": "+92"},
+    {"name": "Philippines", "dial_code": "+63"},
+    {"name": "Poland", "dial_code": "+48"},
+    {"name": "Portugal", "dial_code": "+351"},
+    {"name": "Romania", "dial_code": "+40"},
+    {"name": "Russia", "dial_code": "+7"},
+    {"name": "Saudi Arabia", "dial_code": "+966"},
+    {"name": "Singapore", "dial_code": "+65"},
+    {"name": "South Africa", "dial_code": "+27"},
+    {"name": "South Korea", "dial_code": "+82"},
+    {"name": "Spain", "dial_code": "+34"},
+    {"name": "Sri Lanka", "dial_code": "+94"},
+    {"name": "Sweden", "dial_code": "+46"},
+    {"name": "Switzerland", "dial_code": "+41"},
+    {"name": "Thailand", "dial_code": "+66"},
+    {"name": "Turkey", "dial_code": "+90"},
+    {"name": "Ukraine", "dial_code": "+380"},
+    {"name": "United Arab Emirates", "dial_code": "+971"},
+    {"name": "United Kingdom", "dial_code": "+44"},
+    {"name": "United States", "dial_code": "+1"},
+    {"name": "Vietnam", "dial_code": "+84"},
+]
+
+
+COUNTRY_TO_DIAL_CODE: Final[dict[str, str]] = {
+    entry["name"].lower(): entry["dial_code"] for entry in REGISTRATION_COUNTRIES
+}
+

@@ -1,0 +1,10 @@
+# Python backend/runtime dependencies for later deployment.
+# This project is frontend-only right now, but these packages cover
+# a common path for adding API routes, form handling, and static serving.
+
+fastapi
+uvicorn[standard]
+gunicorn
+jinja2
+python-multipart
+aiofiles
