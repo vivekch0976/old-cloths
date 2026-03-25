@@ -1,0 +1,24 @@
+# Copy this file to db.conf and fill in values for your environment.
+# db.conf is sourced by run_sql.sh and must never be committed.
+
+# PostgreSQL server host.
+DB_HOST=127.0.0.1
+
+# PostgreSQL server port.
+DB_PORT=5432
+
+# Application database name (created by 00_bootstrap_role_and_db.sql).
+DB_NAME=old_clothes_db
+
+# Schema used by all application objects.
+DB_SCHEMA=app
+
+# Application role that owns the schema and tables.
+DB_APP_USER=old_clothes_app
+
+# Password for DB_APP_USER.
+# Only used when SQL_PROMPT_PASSWORD=config.
+DB_PASSWORD=
+
+# Superuser database used when running 00_bootstrap_role_and_db.sql.
+DB_BOOTSTRAP_NAME=postgres

@@ -1,0 +1,3 @@
+backend/sql/db.conf
+.venv/
+backend/sql/logs/
